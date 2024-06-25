@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace TYPO3Fluid\Fluid\Tests\Unit\Core\ViewHelper;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 use TYPO3Fluid\Fluid\Tests\UnitTestCase;
@@ -241,5 +242,23 @@ final class TagBuilderTest extends UnitTestCase
         $tagBuilder = new TagBuilder('foo');
         $tagBuilder->setTagName('');
         self::assertEquals('', $tagBuilder->render());
+    }
+
+    public static function handlesBooleanAttributesCorrectlyDataProvider(): array
+    {
+        return [
+            'value false' => [false, '<foo />'],
+            'value true' => [true, '<foo async="async" />'],
+            'atttribute name' => ['async', '<foo async="async" />'],
+        ];
+    }
+
+    #[DataProvider('handlesBooleanAttributesCorrectlyDataProvider')]
+    #[Test]
+    public function handlesBooleanAttributesCorrectly(mixed $attributeValue, string $expected): void
+    {
+        $tagBuilder = new TagBuilder('foo');
+        $tagBuilder->addAttribute('async', $attributeValue);
+        self::assertEquals($expected, $tagBuilder->render());
     }
 }
